@@ -45,8 +45,15 @@ int main(int argc, char *argv[]) {
     while(1) {
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
-        read(connfd, buffer, )
+        n = scanf(connfd, buffer, )
         //what to do with client
+
+        //можно прочитать строку, пока читается, а потом преобразовать ее в массив чисел
+        //ответ будет просто в виде строки
+
+        //char *response; (all answer)
+        //if (send(connfd, response, sizeof(response)/sizeof(char), 0) == -1)
+        //                perror("Cannot send response.\n");
 
         close(connfd);
         sleep(1);
