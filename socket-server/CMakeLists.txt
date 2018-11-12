@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.12)
-project(sp_lab4 C)
+project(socket_server)
 
 set(CMAKE_C_STANDARD 11)
 
-include_directories(.)
+include_directories(include)
 
-add_executable(sp_lab4
-        linked-list.c
-        linked-list.h
-        functions.c
-        functions.h
-        file_io.c
-        file_io.h
-        main.c)
-
-target_link_libraries(sp_lab4 m)
+add_executable(socket_server
+        include/file_io.h
+        include/functions.h
+        include/linked-list.h
+        src/file_io.c
+        src/functions.c
+        src/linked-list.c
+        src/main.c
+        src/server.c
+        makefile)
