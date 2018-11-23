@@ -9,12 +9,10 @@
 #include <sys/types.h>
 #include <time.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;
-
-    char sendBuff[1025];
-    time_t ticks;
 
     if (listenfd = socket(AF_INET, SOCK_STREAM, 0) < 0)
     {
@@ -28,7 +26,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(5000);
 
-    if (bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    if (bind(listenfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     {
         perror("Cannot bind socket.\n");
         return 1;
@@ -40,20 +38,36 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    puts("[SYSTEM_MSG]: Server has been started.\n")
+    puts("[SYSTEM_MSG]: Server has been started.\n");
 
-    while(1) {
-        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+    while (1)
+    {
+        connfd = accept(listenfd, (struct sockaddr *) NULL, NULL);
 
-        n = scanf(connfd, buffer, )
-        //what to do with client
+        int n;
+        if (read(connfd, &n, sizeof(int) == 0))
+        {
+            perror("No amount of values accepted.\n");
+            return 1;
+        }
 
-        //можно прочитать строку, пока читается, а потом преобразовать ее в массив чисел
-        //ответ будет просто в виде строки
+        write(connfd, n, sizeof(int));
 
-        //char *response; (all answer)
-        //if (send(connfd, response, sizeof(response)/sizeof(char), 0) == -1)
-        //                perror("Cannot send response.\n");
+//        int input;
+//        linked_list_t *linked_list = NULL;
+//
+//        for (int i = 1; i < n - 1; i++)
+//        {
+//            read(connfd, &input, sizeof(int));
+//            if (linked_list == NULL)
+//            {
+//                linked_list = list_create(input);
+//            } else
+//            {
+//                linked_list = list_add_front(input, &linked_list);
+//            }
+//            print(input + "\n");
+//        }
 
         close(connfd);
         sleep(1);
