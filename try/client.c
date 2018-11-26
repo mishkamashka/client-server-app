@@ -18,10 +18,9 @@ void func(int sockfd)
 		scanf("%d", &n);
 		sprintf(buf, "%d", n);
 		send(sockfd,(char *)buf, sizeof(buf), 0);
-		bzero(&n, sizeof(int));
-		printf("whatever_1");
-		recv(sockfd, &n, sizeof(int), 0); 
-		printf("From Server : %d", n);
+		bzero(&buf, sizeof(buf));
+		recv(sockfd, &buf, sizeof(buf), 0); 
+		printf("From Server : %d", atoi(buf));
 	} 
 } 
 

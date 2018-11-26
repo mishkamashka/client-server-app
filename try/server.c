@@ -23,10 +23,10 @@ void func(int sockfd)
 		recv(sockfd, &buf, sizeof(buf), 0);
 		number = atoi(buf); 
 		printf("From client: %d\t To client : ", number); 
-		
+		bzero(&buf, sizeof(buf));
 		scanf("%d", &number);
-		// and send that buffer to client 
-		send(sockfd, (int *)number, sizeof(int), 0); 
+		sprintf(buf, "%d", number);
+		send(sockfd, (char *)buf, sizeof(buf), 0); 
 	} 
 }
 

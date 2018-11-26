@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include "linked-list.h"
+#include "../include/linked_list.h"
 
 void foreach (void (*func)(int), linked_list_t * linked_list);
 linked_list_t *map(int (*func)(int), linked_list_t *linked_list);

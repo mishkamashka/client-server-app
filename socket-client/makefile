@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-o 
 
-all: main.c linked-list.c functions.c file_io.c linked-list.h functions.h file_io.h
-	$(CC) -o main main.c linked-list.c functions.c file_io.c
+all: src/main.c src/linked_list.c src/functions.c src/file_io.c include/linked_list.h include/functions.h include/file_io.h
+	$(CC) -o client src/main.c src/linked_list.c src/functions.c src/file_io.c
 clean:
 	rm -f main
 
