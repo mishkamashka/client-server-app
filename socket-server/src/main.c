@@ -15,8 +15,7 @@
 #include "../include/functions.h"
 #include "../include/file_io.h"
 
-#define MAX 80
-#define PORT 8080
+#define PORT 8081
 #define SA struct sockaddr
 
 linked_list_t *read_list();
@@ -52,7 +51,7 @@ linked_list_t *receive_list(int connfd, int n)
     char element_buf[50];
     for (int i = 0; i < n; i++)
     {
-        int a = recv(connfd, &element_buf, sizeof(element_buf), 0);
+        recv(connfd, &element_buf, sizeof(element_buf), 0);
         if (linked_list == NULL)
         {
             linked_list = list_create(atoi(element_buf));
@@ -73,21 +72,46 @@ void server(int connfd, int sockfd)
     recv(connfd, &buf, sizeof(buf), 0);
     n = atoi(buf);
     printf("Number of accepting elements: %d\n", n);
-    linked_list_t * linked_list = receive_list(connfd, n);
+    linked_list_t *linked_list = receive_list(connfd, n);
 
     printf("Accepted list:\n");
     print_list(linked_list);
 
-    //calculate and return square values
-    linked_list_t * modified_linked_list = map(square, linked_list);
+    //calculate and send square values
+    linked_list_t *modified_linked_list = map(square, linked_list);
     send_list(modified_linked_list, connfd);
 
-    //calculate and return cube values
+    //calculate and send cube values
     modified_linked_list = map(cube, linked_list);
     send_list(modified_linked_list, connfd);
 
+    //find and send min and max values
+    int max = INT_MIN;
+    int min = INT_MAX;
+    int sum = 0;
 
+    sprintf(buf, "%d", foldl(max, get_max, linked_list));
+    send(connfd, (char *) buf, sizeof(buf), 0);
+    bzero(&buf, sizeof(buf));
 
+    sprintf(buf, "%d", foldl(min, get_min, linked_list));
+    send(connfd, (char *) buf, sizeof(buf), 0);
+    bzero(&buf, sizeof(buf));
+
+    //find and send sum
+    sprintf(buf, "%d", foldl(sum, get_sum, linked_list));
+    send(connfd, (char *) buf, sizeof(buf), 0);
+    bzero(&buf, sizeof(buf));
+
+    //calculate and send modules
+    map_mut(abs, linked_list);
+    send_list(linked_list, connfd);
+
+    //calculate and send pows of 2
+    send_list(iterate(1, 10, pow_of_two), connfd);
+
+    list_free(linked_list);
+    list_free(modified_linked_list);
 }
 
 int main(int argc, char const *argv[])
@@ -142,49 +166,6 @@ int main(int argc, char const *argv[])
             close(connfd);
         }
     }
-
-    
-//
-//     int max = INT_MIN;
-//     int min = INT_MAX;
-//     int sum = 0;
-//     printf("Max value: %d\n", foldl(max, get_max, linked_list));
-//     printf("Min value: %d\n", foldl(min, get_min, linked_list));
-//     printf("Sum: %d\n", foldl(sum, get_sum, linked_list));
-//     printf("Modules:\n");
-//     map_mut(abs, linked_list);
-//     print_list(linked_list);
-//
-//     printf("Pows of 2:\n");
-//     print_list(iterate(1, 10, pow_of_two));
-//
-//     if (save(linked_list, wfilepath) == false)
-//     {
-//         printf("Something wrong\n");
-//     }
-//     else
-//     {
-//         printf("List is saved\n");
-//     }
-//
-//     linked_list_t *new_linked_list = NULL;
-//
-//     if (load(&new_linked_list, wfilepath) == false)
-//     {
-//         printf("Could not load list\n");
-//     }
-//     else
-//     {
-//         printf("List is loaded\n");
-//     }
-//
-//     printf("%s", compare(linked_list, new_linked_list) ? "Lists are equal\n" : "Lists are not equal\n");
-//
-//     serialize(linked_list, bfilepath);
-//     deserialize(&new_linked_list, bfilepath);
-//     printf("%s", compare(linked_list, new_linked_list) ? "Lists are equal\n" : "Lists are not equal\n");
-//     list_free(linked_list);
-//    return 0;
 }
 
 void print_list(linked_list_t *linked_list)

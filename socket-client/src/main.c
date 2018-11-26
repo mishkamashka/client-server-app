@@ -14,7 +14,7 @@
 #include "../include/file_io.h"
 
 #define MAX 80
-#define PORT 8080
+#define PORT 8081
 #define SA struct sockaddr
 
 linked_list_t *read_list();
@@ -42,7 +42,7 @@ linked_list_t *receive_list(int sockfd, int n)
     bzero(&element_buf, sizeof(element_buf));
     for (int i = 0; i < n; i++)
     {
-        int a = recv(sockfd, &element_buf, sizeof(element_buf), 0);
+        recv(sockfd, &element_buf, sizeof(element_buf), 0);
         if (linked_list == NULL)
         {
             linked_list = list_create(atoi(element_buf));
@@ -58,9 +58,8 @@ linked_list_t *receive_list(int sockfd, int n)
 
 int main(int argc, char const *argv[])
 {
+//    const char *filepath = "/home/mishka/Desktop/sp/sp-lab4/sources/file";
     const char *filepath = "/home/mishka/Desktop/sp/client-server-app/sources/file";
-    const char *wfilepath = "/home/mishka/Desktop/sp/sp-lab4/sources/wfile";
-    const char *bfilepath = "/home/mishka/Desktop/sp/sp-lab4/sources/file.bin";
 
     linked_list_t *linked_list = NULL;
     if (load(&linked_list, filepath) == false)
@@ -111,9 +110,33 @@ int main(int argc, char const *argv[])
     printf("Cube values:\n");
     print_list(receive_list(sockfd, list_length(linked_list)));
 
+    //accept and print max and min values
+    printf("Min value: ");
+    recv(sockfd, &buf, sizeof(buf), 0);
+    printf("%d\n", atoi(buf));
+    bzero(&buf, sizeof(buf));
 
+    printf("Max value: ");
+    recv(sockfd, &buf, sizeof(buf), 0);
+    printf("%d\n", atoi(buf));
+    bzero(&buf, sizeof(buf));
+
+    //accept and print sum
+    printf("Sum: ");
+    recv(sockfd, &buf, sizeof(buf), 0);
+    printf("%d\n", atoi(buf));
+    bzero(&buf, sizeof(buf));
+
+    //accept and print modules
+    printf("Modules:\n");
+    print_list(receive_list(sockfd, list_length(linked_list)));
+
+    //accept and print pows of 2
+    printf("Pows of 2:\n");
+    print_list(receive_list(sockfd, list_length(linked_list)));
+
+    list_free(linked_list);
     close(sockfd);
-
 }
 
 linked_list_t *read_list()
