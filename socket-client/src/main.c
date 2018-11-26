@@ -23,6 +23,39 @@ void print_list(linked_list_t *linked_list);
 
 void print_list_with_newline(linked_list_t *linked_list);
 
+void send_list(linked_list_t *linked_list, int sockfd)
+{
+    char element_buf[50];
+    for (int i = 0; i < list_length(linked_list); i++)
+    {
+        printf("%d\n", list_get(linked_list, i));
+        sprintf(element_buf, "%d", list_get(linked_list, i));
+        send(sockfd, (char *) element_buf, sizeof(element_buf), 0);
+        bzero(&element_buf, sizeof(element_buf));
+    }
+}
+
+linked_list_t *receive_list(int sockfd, int n)
+{
+    linked_list_t *linked_list = NULL;
+    char element_buf[50];
+    bzero(&element_buf, sizeof(element_buf));
+    for (int i = 0; i < n; i++)
+    {
+        int a = recv(sockfd, &element_buf, sizeof(element_buf), 0);
+        if (linked_list == NULL)
+        {
+            linked_list = list_create(atoi(element_buf));
+        } else
+        {
+            list_add_back(atoi(element_buf), linked_list);
+        }
+        bzero(&element_buf, sizeof(element_buf));
+    }
+    return linked_list;
+}
+
+
 int main(int argc, char const *argv[])
 {
     const char *filepath = "/home/mishka/Desktop/sp/client-server-app/sources/file";
@@ -63,47 +96,23 @@ int main(int argc, char const *argv[])
     } else
         printf("connected to the server..\n");
 
-//    while (1)
-//    {
-        printf("whatever1");
-        char buf[50];
-        sprintf(buf, "%d", list_length(linked_list));
-        send(sockfd, (char *) buf, sizeof(buf), 0);
-        printf("whatever");
+    char buf[50];
+    sprintf(buf, "%d", list_length(linked_list));
+    send(sockfd, (char *) buf, sizeof(buf), 0);
 
-        char element_buf[50];
-        for (int i = 0; i < list_length(linked_list); i++)
-        {
-            sprintf(element_buf, "%d", list_get(linked_list, i));
-            send(sockfd, (char *) element_buf, sizeof(buf), 0);
-            bzero(&element_buf, sizeof(element_buf));
-        }
+    send_list(linked_list, sockfd);
 
-        char answer_buf[MAX];
-        recv(sockfd, &answer_buf, sizeof(answer_buf), 0);
-        printf("From Server : %s", answer_buf);
-//    }
+    //accept and print square values
+    printf("Square values:\n");
+    print_list(receive_list(sockfd, list_length(linked_list)));
 
-    // close the socket
+
+    //accept and print cube values
+    printf("Cube values:\n");
+    print_list(receive_list(sockfd, list_length(linked_list)));
+
+
     close(sockfd);
-//
-//    while (1) {
-//        char buf[50];
-//        sprintf(buf, "%d", list_length(linked_list));
-//        send(sockfd, (char *)buf, sizeof(buf), 0);
-//
-//        char element_buf[50];
-//        for (int i = 0; i < list_length(linked_list) - 1; i++)
-//        {
-//            sprintf(element_buf, "%d", list_get(linked_list, i));
-//            send(sockfd, (char *)element_buf, sizeof(buf), 0);
-//            bzero(&element_buf, sizeof(element_buf));
-//        }
-//
-//        char answer_buf[MAX];
-//        recv(sockfd, &answer_buf, sizeof(answer_buf), 0);
-//        printf("From Server : %s", answer_buf);
-//    }
 
 }
 

@@ -35,6 +35,61 @@ int get_sum(int a, int b);
 
 int pow_of_two(int a);
 
+void send_list(linked_list_t *linked_list, int connfd)
+{
+    char element_buf[50];
+    for (int i = 0; i < list_length(linked_list); i++)
+    {
+        sprintf(element_buf, "%d", list_get(linked_list, i));
+        send(connfd, (char *) element_buf, sizeof(element_buf), 0);
+        bzero(&element_buf, sizeof(element_buf));
+    }
+}
+
+linked_list_t *receive_list(int connfd, int n)
+{
+    linked_list_t *linked_list = NULL;
+    char element_buf[50];
+    for (int i = 0; i < n; i++)
+    {
+        int a = recv(connfd, &element_buf, sizeof(element_buf), 0);
+        if (linked_list == NULL)
+        {
+            linked_list = list_create(atoi(element_buf));
+        } else
+        {
+            list_add_back(atoi(element_buf), linked_list);
+        }
+        bzero(&element_buf, sizeof(element_buf));
+    }
+    return linked_list;
+}
+
+
+void server(int connfd, int sockfd)
+{
+    int n;
+    char buf[50];
+    recv(connfd, &buf, sizeof(buf), 0);
+    n = atoi(buf);
+    printf("Number of accepting elements: %d\n", n);
+    linked_list_t * linked_list = receive_list(connfd, n);
+
+    printf("Accepted list:\n");
+    print_list(linked_list);
+
+    //calculate and return square values
+    linked_list_t * modified_linked_list = map(square, linked_list);
+    send_list(modified_linked_list, connfd);
+
+    //calculate and return cube values
+    modified_linked_list = map(cube, linked_list);
+    send_list(modified_linked_list, connfd);
+
+
+
+}
+
 int main(int argc, char const *argv[])
 {
     int sockfd, connfd, len;
@@ -83,42 +138,12 @@ int main(int argc, char const *argv[])
         } else
         {
             printf("server accept the client...\n");
-            int n;
-            char buf[50];
-            recv(connfd, &buf, sizeof(buf), 0);
-            n = atoi(buf);
-            printf("Number of accepting elements: %d\n", n);
-
-//        linked_list_t *linked_list = NULL;
-//        char element_buf[50];
-//        for (int i = 0; i < n; i++)
-//        {
-//            recv(connfd, &element_buf, sizeof(element_buf), 0);
-//            if (linked_list == NULL)
-//            {
-//                linked_list = list_create(atoi(element_buf));
-//            } else
-//            {
-//                linked_list = list_add_front(atoi(element_buf), &linked_list);
-//            }
-//        }
-//        print_list(linked_list);
-
+            server(connfd, sockfd);
             close(connfd);
         }
     }
 
-
-
-
-
-
-//     print_list(linked_list);
-//     print_list_with_newline(linked_list);
-//     printf("Square values:\n");
-//     print_list(map(square, linked_list));
-//     printf("Cube values:\n");
-//     print_list(map(cube, linked_list));
+    
 //
 //     int max = INT_MIN;
 //     int min = INT_MAX;
@@ -160,44 +185,44 @@ int main(int argc, char const *argv[])
 //     printf("%s", compare(linked_list, new_linked_list) ? "Lists are equal\n" : "Lists are not equal\n");
 //     list_free(linked_list);
 //    return 0;
-    }
+}
 
-    void print_list(linked_list_t *linked_list)
+void print_list(linked_list_t *linked_list)
+{
+    while (linked_list != NULL)
     {
-        while (linked_list != NULL)
-        {
-            printf("%d ", linked_list->value);
-            linked_list = linked_list->next;
-        }
-        printf("\n");
+        printf("%d ", linked_list->value);
+        linked_list = linked_list->next;
     }
+    printf("\n");
+}
 
-    int square(int number)
-    {
-        return number * number;
-    }
+int square(int number)
+{
+    return number * number;
+}
 
-    int cube(int number)
-    {
-        return number * number * number;
-    }
+int cube(int number)
+{
+    return number * number * number;
+}
 
-    int get_max(int a, int b)
-    {
-        return a > b ? a : b;
-    }
+int get_max(int a, int b)
+{
+    return a > b ? a : b;
+}
 
-    int get_min(int a, int b)
-    {
-        return a < b ? a : b;
-    }
+int get_min(int a, int b)
+{
+    return a < b ? a : b;
+}
 
-    int get_sum(int a, int b)
-    {
-        return a + b;
-    }
+int get_sum(int a, int b)
+{
+    return a + b;
+}
 
-    int pow_of_two(int a)
-    {
-        return 2 * a;
-    }
+int pow_of_two(int a)
+{
+    return 2 * a;
+}
