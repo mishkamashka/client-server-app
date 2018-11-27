@@ -163,7 +163,7 @@ int main(int argc, char const *argv[])
         {
             printf("server accept the client...\n");
             server(connfd, sockfd);
-            close(connfd);
+//            close(connfd);
         }
     }
 }

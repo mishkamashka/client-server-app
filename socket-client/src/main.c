@@ -28,7 +28,6 @@ void send_list(linked_list_t *linked_list, int sockfd)
     char element_buf[50];
     for (int i = 0; i < list_length(linked_list); i++)
     {
-        printf("%d\n", list_get(linked_list, i));
         sprintf(element_buf, "%d", list_get(linked_list, i));
         send(sockfd, (char *) element_buf, sizeof(element_buf), 0);
         bzero(&element_buf, sizeof(element_buf));
@@ -67,7 +66,6 @@ int main(int argc, char const *argv[])
         printf("Could not load list\n");
         return 0;
     }
-    print_list(linked_list);
 
     int sockfd, connfd;
     struct sockaddr_in servaddr, cli;
@@ -100,7 +98,7 @@ int main(int argc, char const *argv[])
     send(sockfd, (char *) buf, sizeof(buf), 0);
 
     send_list(linked_list, sockfd);
-
+    printf("List has been sent to the server\n");
     //accept and print square values
     printf("Square values:\n");
     print_list(receive_list(sockfd, list_length(linked_list)));
